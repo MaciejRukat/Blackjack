@@ -5,6 +5,7 @@ void Hand::AddCard(const Card& Card)
 {
     m_hand.push_back(Card);
     CountScore();
+    UpdateState();
 }
 
 void Hand::ClearHand()
@@ -45,4 +46,21 @@ void Hand::CountScore(){
         if(m_score + 10 + aceCounter <= 21) m_score = m_score + 10 + aceCounter;
         else m_score = m_score + aceCounter;
     }
+}
+
+void Hand::UpdateState()
+{
+    if(m_score > 21)
+    {
+        m_state = BUST;
+    }
+
+    if(m_hand.size() == 2 && m_score == 21){
+        m_state = BLACKJACK;
+    }
+}
+
+void Hand::Stand()
+{
+    m_score = STAND;
 }

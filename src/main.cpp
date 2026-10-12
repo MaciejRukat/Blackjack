@@ -24,10 +24,11 @@ int main() {
     Card six(HEART,SIX);
     Card two(HEART,TWO);
 
-
-    hand.AddCard(as);
-    hand.AddCard(as);
+    hand.AddCard(k);
+    hand.AddCard(k);
+    hand.AddCard(k);
     std::cout<<hand.GetScore();
+    std::cout<<hand.GetState();
 
     return 0;
 }
