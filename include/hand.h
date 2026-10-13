@@ -11,6 +11,7 @@ class Hand {
         const std::vector<Card>& GetCards() const;
         int GetScore() const;
         int GetBet() const;
+        size_t GetNumberofCards() const;
         void ClearHand();
         bool IsBlackjack() const;
         bool IsBust() const;

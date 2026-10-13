@@ -43,6 +43,11 @@ int Hand::GetBet() const
     return m_bet;
 }
 
+size_t Hand::GetNumberofCards() const
+{
+    return m_hand.size();
+}
+
 bool Hand::IsBlackjack() const
 {
     return (m_hand.size() == 2 && m_score == 21);
