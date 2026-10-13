@@ -4,6 +4,13 @@
 
 Deck::Deck()
 {
+    InitializeDeck();
+    m_rng.seed(std::random_device{}());
+}
+
+void Deck::InitializeDeck()
+{
+    m_cards.clear();
     m_cards.reserve(52);
     for(int i = 0; i < 4; ++i)
     {
@@ -15,8 +22,6 @@ Deck::Deck()
             m_cards.push_back(Card(suit,value));
         }
     }
-
-    m_rng.seed(std::random_device{}());
 }
 
 void Deck::ShuffleDeck()
@@ -39,6 +44,9 @@ size_t Deck::GetDeckSize() const
 
 Card Deck::DrawCard()
 {
+    if(m_cards.size() == 0){
+        InitializeDeck();
+    }
     Card drawedCard = m_cards.back();
     m_cards.pop_back();
     return drawedCard;

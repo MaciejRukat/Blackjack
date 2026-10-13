@@ -5,11 +5,12 @@
 class Player
 {
     public:
-        Player(int money): m_money(m_money){};
-        void GetMoney() const{};
-        void SetMoney();
+        Player(int money, int numberOfHands);
+        int GetMoney() const;
+        void DepositMoney(int money);
         
     private:
-        std::vector<Hand> hands;
-        int m_money = 0
+        std::vector<Hand> m_hands;
+        int m_money = 0;
+        int m_numberOfHands = 1;
 };

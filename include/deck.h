@@ -12,7 +12,7 @@ class Deck {
         size_t GetDeckSize() const;
 
     private:
+        void InitializeDeck();
         std::vector<Card> m_cards;
-        std::vector<Card> m_discarded_cards; //TODO deck re-shuffle
         std::mt19937 m_rng;
 };

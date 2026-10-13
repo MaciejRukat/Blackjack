@@ -2,23 +2,23 @@
 #include <vector>
 #include "card.h"
 
-enum STATE{ACTIVE, STAND, BUST, WIN, BLACKJACK};
-
 class Hand {
     public:
+        Hand();
         Hand(int bet);
         void AddCard(const Card& card);
-        void PrintHand();
+        void PrintHand() const;
+        const std::vector<Card>& GetCards() const;
         int GetScore() const;
-        STATE GetState() const;
-        void SetState(STATE state); 
+        int GetBet() const;
+        void ClearHand();
+        bool IsBlackjack() const;
+        bool IsBust() const;
+
 
     private:
-        void ClearHand();
         void CountScore();
-        int GetReward();
         std::vector<Card> m_hand;
-        STATE m_state;
         int m_score;
         int m_bet;
 };

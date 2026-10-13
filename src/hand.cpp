@@ -1,16 +1,17 @@
 #include<iostream>
 #include"hand.h"
 
+Hand::Hand(){}
+
 Hand::Hand(int bet):m_bet(bet)
 {
-    m_state = ACTIVE;
+    m_score = 0; 
 }
 
-void Hand::AddCard(const Card& Card)
+void Hand::AddCard(const Card& card)
 {
-    m_hand.push_back(Card);
+    m_hand.push_back(card);
     CountScore();
-    UpdateState();
 }
 
 void Hand::ClearHand()
@@ -19,7 +20,7 @@ void Hand::ClearHand()
     m_score = 0;
 }
 
-void Hand::PrintHand()
+void Hand::PrintHand() const
 {
     for(size_t i = 0; i < m_hand.size();++i)
     {
@@ -27,19 +28,30 @@ void Hand::PrintHand()
     }
 }
 
+const std::vector<Card>& Hand::GetCards() const
+{
+    return m_hand;
+}
+
 int Hand::GetScore() const
 {
     return m_score;
 }
 
-STATE Hand::GetState() const
+int Hand::GetBet() const
 {
-    return m_state;
+    return m_bet;
 }
 
-void Hand::SetState(STATE state)
+bool Hand::IsBlackjack() const
 {
-    m_state = state;
+    return (m_hand.size() == 2 && m_score == 21);
+}
+
+bool Hand::IsBust() const
+{
+    return (m_score > 21);
+
 }
 
 void Hand::CountScore()
@@ -67,35 +79,5 @@ void Hand::CountScore()
     {
         if(m_score + 10 + aceCounter <= 21) m_score = m_score + 10 + aceCounter;
         else m_score = m_score + aceCounter;
-    }
-}
-
-void Hand::UpdateState()
-{
-    if(m_score > 21)
-    {
-        m_state = BUST;
-    }
-
-    if(m_hand.size() == 2 && m_score == 21){
-        m_state = BLACKJACK;
-    }
-}
-
-int Hand::GetReward()
-{
-    switch (m_state)
-    {
-    case BUST:
-        return 0;
-        break;
-    case WIN:
-        return m_bet * 2;
-        break;
-    case BLACKJACK:
-        return m_bet * 3/2;
-        break;
-    default:
-        break;
     }
 }
