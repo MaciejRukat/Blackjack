@@ -1,6 +1,11 @@
 #include<iostream>
 #include"hand.h"
 
+Hand::Hand(int bet):m_bet(bet)
+{
+    m_state = ACTIVE;
+}
+
 void Hand::AddCard(const Card& Card)
 {
     m_hand.push_back(Card);
@@ -13,6 +18,7 @@ void Hand::ClearHand()
     m_hand.clear();
     m_score = 0;
 }
+
 void Hand::PrintHand()
 {
     for(size_t i = 0; i < m_hand.size();++i)
@@ -21,7 +27,23 @@ void Hand::PrintHand()
     }
 }
 
-void Hand::CountScore(){
+int Hand::GetScore() const
+{
+    return m_score;
+}
+
+STATE Hand::GetState() const
+{
+    return m_state;
+}
+
+void Hand::SetState(STATE state)
+{
+    m_state = state;
+}
+
+void Hand::CountScore()
+{
     int aceCounter = 0;
     m_score = 0;
     for(size_t i = 0; i < m_hand.size(); ++i)
@@ -60,7 +82,20 @@ void Hand::UpdateState()
     }
 }
 
-void Hand::Stand()
+int Hand::GetReward()
 {
-    m_score = STAND;
+    switch (m_state)
+    {
+    case BUST:
+        return 0;
+        break;
+    case WIN:
+        return m_bet * 2;
+        break;
+    case BLACKJACK:
+        return m_bet * 3/2;
+        break;
+    default:
+        break;
+    }
 }

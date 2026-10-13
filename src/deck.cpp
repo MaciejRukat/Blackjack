@@ -32,6 +32,11 @@ void Deck::PrintDeck() const
     }
 }
 
+size_t Deck::GetDeckSize() const 
+{
+    return m_cards.size();
+}
+
 Card Deck::DrawCard()
 {
     Card drawedCard = m_cards.back();

@@ -9,7 +9,7 @@ int main() {
     // Card karta = deck.DrawCard();
     // karta.PrintCard();
 
-    Hand hand;
+    Hand hand(200);
     // hand.AddCard(karta);
     // hand.PrintHand();
 
@@ -29,6 +29,7 @@ int main() {
     hand.AddCard(k);
     std::cout<<hand.GetScore();
     std::cout<<hand.GetState();
+    std::cout<<hand.GetScore();
 
     return 0;
 }
