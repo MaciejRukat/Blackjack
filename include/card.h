@@ -6,9 +6,9 @@ enum VALUE {ACE, TWO, THREE, FOUR, FIVE, SIX,SEVEN, EIGHT, NINE, TEN, JACK, QUEE
 
 class Card {
     public:
-        Card(SUIT suit, VALUE value) : m_suit(suit), m_value(value) {}
-        SUIT GetSuit() const { return m_suit; }
-        VALUE GetValue() const { return m_value; }
+        Card(SUIT suit, VALUE value);
+        SUIT GetSuit() const;
+        VALUE GetValue() const;
         void PrintCard() const;
     private:
         SUIT m_suit;

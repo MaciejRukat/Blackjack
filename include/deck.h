@@ -9,7 +9,7 @@ class Deck {
         void ShuffleDeck();
         Card DrawCard();
         void PrintDeck() const;
-        size_t GetDeckSize() const {return m_cards.size();}
+        size_t GetDeckSize() const;
 
     private:
         std::vector<Card> m_cards;

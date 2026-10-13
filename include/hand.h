@@ -6,18 +6,19 @@ enum STATE{ACTIVE, STAND, BUST, WIN, BLACKJACK};
 
 class Hand {
     public:
-        Hand(){m_state = ACTIVE;}
+        Hand(int bet);
         void AddCard(const Card& card);
-        void ClearHand();
         void PrintHand();
-        int GetScore(){return m_score;}
-        STATE GetState(){return m_state;}
-        void Stand();
+        int GetScore() const;
+        STATE GetState() const;
+        void SetState(STATE state); 
 
     private:
+        void ClearHand();
         void CountScore();
-        void UpdateState();
+        int GetReward();
         std::vector<Card> m_hand;
         STATE m_state;
         int m_score;
+        int m_bet;
 };
