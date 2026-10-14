@@ -10,7 +10,8 @@ class Player
         void RecieveReward(int reward);
         const Hand& GetHand(size_t index) const;
         size_t GetNumberOfHands() const;
-        void DepositMoney(int money);
+        void InputMoney();
+        bool PlaceBet(int bet);
         void AddHand(int bet);
         void AddCard(const Card& card, size_t index);
         void ResetHands();

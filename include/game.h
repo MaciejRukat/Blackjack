@@ -20,7 +20,8 @@ class Game
         Deck m_deck;
         int m_startHands;
         std::vector<bool> m_isHandBust;
+        int InputBet(int handNumber);
         void DelayConsoleOutput(int milliseconds) const;
-        OUTCOME Game::DetermineOutcome(const Hand& playerHand, const Hand& dealerHand);
+        OUTCOME DetermineOutcome(const Hand& playerHand, const Hand& dealerHand);
         int CalculateReward(OUTCOME outcome, int bet);
 };

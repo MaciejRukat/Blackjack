@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include "game.h"
+#include "input.h"
 
 Game::Game(Player player, Dealer dealer, Deck deck, int startHands): m_player(player), m_dealer(dealer), m_deck(deck), m_startHands(startHands){}
 
@@ -10,10 +11,7 @@ void Game::DealInitialCards()
     m_dealer.ResetHand();
     for(int i = 0; i < m_startHands; ++i)
     {
-        int bet = 0;
-        std::cout<<"Podaj wartość zakładu ręki nr. "<< i + 1 << ":\n";
-        std::cin >> bet;
-        //TODO walidacja betu
+        int bet = InputBet(i+1);
         m_player.AddHand(bet);
     }
     
@@ -51,6 +49,22 @@ void Game::DealInitialCards()
     }
 }
 
+int Game::InputBet(int handNumber)
+{
+    while (true)
+    {
+        std::cout << "Podaj wartość zakładu ręki nr. " << handNumber << ":\n";
+        int bet = ReadInt();
+
+        if (m_player.PlaceBet(bet))
+            return bet;                 
+
+        std::cout << "Nieprawidłowy zakład (saldo: " << m_player.GetMoney() << ").\n";
+        std::cout << "1 -> dopłać pieniądze, 2 -> podaj nowy zakład:\n";
+        if (ReadInt() == 1) m_player.InputMoney();
+    }
+}
+
 void Game::PlayRound()
 {
     for(size_t i = 0; i < m_player.GetNumberOfHands(); ++i)
@@ -65,6 +79,7 @@ void Game::PlayRound()
             continue;
         }
 
+        bool isDouble = false;
         while(true)
         {
             std::cout<<"\nRęka "<<i + 1<<": ";
@@ -73,22 +88,35 @@ void Game::PlayRound()
 
             if(playerHand.IsBust())
             {
-                std::cout << "BUST\n" <<"\n";
+                std::cout << "\nBUST\n" <<"\n";
                 break;
             }
             
-            
-            std::cout<<"\nWbierz ruch: 1 -> HIT, 2 -> STAND: \n";
-            int playerChoice = 0;
-            std::cin >> playerChoice;
+            if(isDouble) break; 
 
-            if(playerChoice == 2) 
+            if(playerHand.GetNumberofCards() == 2) std::cout<<"\nWbierz ruch: 1 -> HIT, 2 -> STAND, 3 -> DOUBLE:\n";
+            else std::cout<<"\nWbierz ruch: 1 -> HIT, 2 -> STAND:\n";
+            
+            int choice = 0;
+            while (true)
             {
-                std::cout << "STAND\n" <<"\n";
-                break;
+                choice = ReadInt();
+                bool canDouble = (playerHand.GetNumberofCards() == 2);
+                if (choice == 1 || choice == 2 || (choice == 3 && canDouble)) break;
+                std::cout << "Niepoprawny wybór.\n";
             }
 
-            m_player.AddCard(m_deck.DrawCard(),i);
+            if (choice == 2) 
+            { 
+                std::cout << "STAND\n\n"; 
+                break; 
+            }
+            if (choice == 3) 
+            {
+                isDouble = true;
+                std::cout << "DOUBLE\n\n";
+            } 
+            m_player.AddCard(m_deck.DrawCard(), i);
         }
         DelayConsoleOutput(1000);
     }
@@ -136,26 +164,26 @@ int Game::CalculateReward(OUTCOME outcome, int bet)
     {
         case WIN:
             reward = bet*2;
-            std::cout<<"\nWYGRAŁEŚ!\nTwoja nagroda wynosi: "<<reward<<"\n";
+            std::cout<<"\nWYGRAŁEŚ!\n";
             break;
         
         case BLACKJACK:
             reward = bet + bet * 3 / 2;
-            std::cout<<"\nBLACKJACK\nTwoja nagroda wynosi: "<<reward<<"\n";
+            std::cout<<"\nBLACKJACK\n";
             break;
 
         case PUSH:
             reward = bet;
-            std::cout<<"PUSH\nOtrzymujesz z powrotem pieniądze z zakładu\n";
+            std::cout<<"PUSH\n ";
             break;
 
         case BUST:
-            reward = bet;
+            reward = 0;
             std::cout<<"BUST\nPrzegrałeś\n";
             break;
 
         case LOSE:
-            reward = bet;
+            reward = 0;
             std::cout<<"\nPrzegrałeś\n";
             break;
 
