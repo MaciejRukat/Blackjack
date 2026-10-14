@@ -33,7 +33,7 @@ void Deck::PrintDeck() const
 {
     for(size_t i = 0; i < m_cards.size();++i)
     {
-        m_cards[i].PrintCard();
+        m_cards[i].PrintValue();
     }
 }
 

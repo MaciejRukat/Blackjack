@@ -7,7 +7,7 @@ class Hand {
         Hand();
         Hand(int bet);
         void AddCard(const Card& card);
-        void PrintHand() const;
+        void PrintHand(bool onlyFirst = false) const;
         const std::vector<Card>& GetCards() const;
         int GetScore() const;
         int GetBet() const;

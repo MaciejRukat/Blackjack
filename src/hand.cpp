@@ -20,11 +20,19 @@ void Hand::ClearHand()
     m_score = 0;
 }
 
-void Hand::PrintHand() const
+void Hand::PrintHand(bool onlyFirst) const
 {
+    if(onlyFirst == true) 
+    {
+        m_hand[0].PrintValue();
+        std::cout<<" ";
+        return;
+    }
+
     for(size_t i = 0; i < m_hand.size();++i)
     {
-        m_hand[i].PrintCard();
+        m_hand[i].PrintValue();
+        std::cout<<" ";
     }
 }
 
