@@ -4,19 +4,23 @@
 #include "dealer.h"
 #include "deck.h"
 
-enum STATE {ACTIVE, BUST, STAND}; 
+enum OUTCOME {WIN, LOSE, BLACKJACK, PUSH, BUST, NONE};
 
 class Game
 {
     public:
     Game(Player player, Dealer dealer, Deck deck, int startHands);
     void DealInitialCards();
-    void PlayerMove();
+    void PlayRound();
+   
     
     private:
         Player m_player;
         Dealer m_dealer;
         Deck m_deck;
         int m_startHands;
-        std::vector<STATE> m_playerHandsStates;
+        std::vector<bool> m_isHandBust;
+        void DelayConsoleOutput(int milliseconds) const;
+        OUTCOME Game::DetermineOutcome(const Hand& playerHand, const Hand& dealerHand);
+        int CalculateReward(OUTCOME outcome, int bet);
 };

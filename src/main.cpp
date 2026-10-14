@@ -11,6 +11,6 @@ int main() {
     Dealer dealer;
     Game game(player, dealer, deck, 2);
     game.DealInitialCards();
-    game.PlayerMove();
+    game.PlayRound();
     return 0;
 }

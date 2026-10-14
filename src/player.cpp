@@ -8,6 +8,11 @@ int Player::GetMoney() const
     return m_money;
 }
 
+void Player::RecieveReward(int reward)
+{
+    m_money += reward;
+}
+
 const Hand &Player::GetHand(size_t index) const
 {
     return m_hands.at(index);

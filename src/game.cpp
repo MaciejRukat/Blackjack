@@ -28,39 +28,40 @@ void Game::DealInitialCards()
             std::cout<<"Ręka "<<j + 1<<": ";
             m_player.GetHand(j).PrintHand();
             std::cout<<"\n";
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            
         }
 
         std::cout<<"\n";
         std::cout<<"Rozdaję kar†ę krupierowi"<<std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        DelayConsoleOutput(1000);
         Card dealerCard = m_deck.DrawCard();
         m_dealer.AddCard(dealerCard);
         if(i == 0) 
         {
             std::cout<<"Karta zakryta\n"<<std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            DelayConsoleOutput(1000);
         }
         else 
         {
             std::cout<<"Karta zakryta ";
             m_dealer.GetHand().PrintHand(true);
             std::cout<<"\n";
+            DelayConsoleOutput(1000);
         }
     }
 }
 
-void Game::PlayerMove()
+void Game::PlayRound()
 {
-    m_playerHandsStates.clear();
-
     for(size_t i = 0; i < m_player.GetNumberOfHands(); ++i)
     {
-        Hand playerHand = m_player.GetHand(i);
+        const Hand& playerHand = m_player.GetHand(i);
         
         if(playerHand.IsBlackjack() == true) 
         {
-            m_playerHandsStates.push_back(STAND);
+            std::cout<<"\nRęka "<<i + 1<<": ";
+            playerHand.PrintHand();
+            std::cout << "BLACKJACK\n" <<"\n";
             continue;
         }
 
@@ -68,12 +69,14 @@ void Game::PlayerMove()
         {
             std::cout<<"\nRęka "<<i + 1<<": ";
             playerHand.PrintHand();
+            
+
             if(playerHand.IsBust())
             {
                 std::cout << "BUST\n" <<"\n";
-                m_playerHandsStates.push_back(BUST);
                 break;
             }
+            
             
             std::cout<<"\nWbierz ruch: 1 -> HIT, 2 -> STAND: \n";
             int playerChoice = 0;
@@ -81,24 +84,86 @@ void Game::PlayerMove()
 
             if(playerChoice == 2) 
             {
-                m_playerHandsStates.push_back(STAND);
+                std::cout << "STAND\n" <<"\n";
                 break;
             }
 
-            playerHand.AddCard(m_deck.DrawCard());
+            m_player.AddCard(m_deck.DrawCard(),i);
         }
+        DelayConsoleOutput(1000);
     }
 
-    Hand dealerHand = m_dealer.GetHand();
+    const Hand& dealerHand = m_dealer.GetHand();
     std::cout<<"\nKrupier: ";
     dealerHand.PrintHand();
     while(m_dealer.ShouldHit())
     {
-        dealerHand.AddCard(m_deck.DrawCard());
+        m_dealer.AddCard(m_deck.DrawCard());
         dealerHand.PrintHand();    
-
-        
     }
 
+    for(size_t i = 0; i < m_player.GetNumberOfHands(); ++i)
+    {
+        const Hand& playerHand = m_player.GetHand(i);
+        OUTCOME outcome = DetermineOutcome(playerHand, dealerHand);
+        int reward = CalculateReward(outcome, playerHand.GetBet());
+        if(reward > 0) m_player.RecieveReward(reward);
+    } 
+        
+}
 
+void Game::DelayConsoleOutput(int milliseconds) const
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+}
+
+OUTCOME Game::DetermineOutcome(const Hand& playerHand, const Hand& dealerHand)
+{
+        if(playerHand.IsBust()) return BUST;
+        if(playerHand.IsBlackjack()) return dealerHand.IsBlackjack() ? PUSH : BLACKJACK;
+        if(dealerHand.IsBlackjack()) return LOSE;
+        if(dealerHand.IsBust()) return WIN;
+        if(playerHand.GetScore() > dealerHand.GetScore()) return WIN;
+        if(playerHand.GetScore() == dealerHand.GetScore()) return PUSH;
+        else return LOSE;       
+}
+
+int Game::CalculateReward(OUTCOME outcome, int bet)
+{
+    int reward = 0;
+    
+    switch (outcome)
+    {
+        case WIN:
+            reward = bet*2;
+            std::cout<<"\nWYGRAŁEŚ!\nTwoja nagroda wynosi: "<<reward<<"\n";
+            break;
+        
+        case BLACKJACK:
+            reward = bet + bet * 3 / 2;
+            std::cout<<"\nBLACKJACK\nTwoja nagroda wynosi: "<<reward<<"\n";
+            break;
+
+        case PUSH:
+            reward = bet;
+            std::cout<<"PUSH\nOtrzymujesz z powrotem pieniądze z zakładu\n";
+            break;
+
+        case BUST:
+            reward = bet;
+            std::cout<<"BUST\nPrzegrałeś\n";
+            break;
+
+        case LOSE:
+            reward = bet;
+            std::cout<<"\nPrzegrałeś\n";
+            break;
+
+        case NONE:
+            break;
+
+        default:
+            break;
+    }
+    return reward;
 }
