@@ -18,7 +18,7 @@ VALUE Card::GetValue() const
     return m_value;
 }
 
-void Card::PrintCard() const 
+void Card::PrintValue() const
 {
-    std::cout<<cardSuits[m_suit]<<" "<<cardValues[m_value]<<std::endl;
+    std::cout<<cardValues[m_value];
 }

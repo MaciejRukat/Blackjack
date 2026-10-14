@@ -9,7 +9,7 @@ class Card {
         Card(SUIT suit, VALUE value);
         SUIT GetSuit() const;
         VALUE GetValue() const;
-        void PrintCard() const;
+        void PrintValue() const;
     private:
         SUIT m_suit;
         VALUE m_value;
