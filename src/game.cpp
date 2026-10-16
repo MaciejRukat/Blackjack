@@ -4,7 +4,25 @@
 #include "game.h"
 #include "input.h"
 
-Game::Game(Player player, Dealer dealer, Deck deck, int startHands): m_player(player), m_dealer(dealer), m_deck(deck), m_startHands(startHands){}
+Game::Game()
+{
+    m_player = Player();
+    m_dealer = Dealer();
+    m_deck = Deck();
+}
+
+void Game::Play() 
+{
+    std::cout<<"Witaj w grze w blackjacka!\n";
+    m_player.InputMoney();
+    while(m_continuePlay)
+    {
+        InputStartHands();
+        DealInitialCards();
+        PlayRound();
+        ContinuePlay();
+    }
+}
 
 void Game::DealInitialCards()
 {   m_player.ResetHands();
@@ -15,9 +33,11 @@ void Game::DealInitialCards()
         m_player.AddHand(bet);
     }
     
+    bool secondHiddenCard = false;
+
     for(int i = 0; i < 2; ++i)
     {
-        std::cout<<"Rozdaję kar†ę "<<i+1<<std::endl;
+        std::cout<<"\nRozdaję kar†ę "<<i+1<<std::endl;
 
         for(int j = 0; j < m_startHands; ++j)
         {
@@ -25,27 +45,18 @@ void Game::DealInitialCards()
             m_player.AddCard(playerCard, j);
             std::cout<<"Ręka "<<j + 1<<": ";
             m_player.GetHand(j).PrintHand();
-            std::cout<<"\n";
-            
+            DelayConsoleOutput();
         }
 
-        std::cout<<"\n";
-        std::cout<<"Rozdaję kar†ę krupierowi"<<std::endl;
-        DelayConsoleOutput(1000);
+        std::cout<<"\nRozdaję kar†ę krupierowi"<<std::endl;
         Card dealerCard = m_deck.DrawCard();
         m_dealer.AddCard(dealerCard);
-        if(i == 0) 
-        {
-            std::cout<<"Karta zakryta\n"<<std::endl;
-            DelayConsoleOutput(1000);
-        }
-        else 
-        {
-            std::cout<<"Karta zakryta ";
-            m_dealer.GetHand().PrintHand(true);
-            std::cout<<"\n";
-            DelayConsoleOutput(1000);
-        }
+        
+        if(i == 1) secondHiddenCard = true;
+        
+        m_dealer.GetHand().PrintHand(secondHiddenCard);
+
+        DelayConsoleOutput();
     }
 }
 
@@ -62,6 +73,19 @@ int Game::InputBet(int handNumber)
         std::cout << "Nieprawidłowy zakład (saldo: " << m_player.GetMoney() << ").\n";
         std::cout << "1 -> dopłać pieniądze, 2 -> podaj nowy zakład:\n";
         if (ReadInt() == 1) m_player.InputMoney();
+    }
+}
+
+void Game::InputStartHands()
+{
+    while (true)
+    {
+        std::cout << "Podaj ilość zakładów:\n";
+        m_startHands = ReadInt();       
+
+        if(m_startHands > 0) return;
+        std::cout<<"Liczba zakładów musi być większa niż 0. Sprobuj jeszcze raz.\n";
+        
     }
 }
 
@@ -94,14 +118,14 @@ void Game::PlayRound()
             
             if(isDouble) break; 
 
-            if(playerHand.GetNumberofCards() == 2) std::cout<<"\nWbierz ruch: 1 -> HIT, 2 -> STAND, 3 -> DOUBLE:\n";
+            bool canDouble = (playerHand.GetNumberofCards() == 2 && m_player.GetMoney() >= playerHand.GetBet());
+            if(canDouble) std::cout<<"\nWbierz ruch: 1 -> HIT, 2 -> STAND, 3 -> DOUBLE:\n";
             else std::cout<<"\nWbierz ruch: 1 -> HIT, 2 -> STAND:\n";
             
             int choice = 0;
             while (true)
             {
                 choice = ReadInt();
-                bool canDouble = (playerHand.GetNumberofCards() == 2);
                 if (choice == 1 || choice == 2 || (choice == 3 && canDouble)) break;
                 std::cout << "Niepoprawny wybór.\n";
             }
@@ -114,34 +138,66 @@ void Game::PlayRound()
             if (choice == 3) 
             {
                 isDouble = true;
+                m_player.PlaceBet(playerHand.GetBet());
+                m_player.Double(i);
                 std::cout << "DOUBLE\n\n";
             } 
+            DelayConsoleOutput();
             m_player.AddCard(m_deck.DrawCard(), i);
         }
-        DelayConsoleOutput(1000);
+        DelayConsoleOutput();
     }
 
     const Hand& dealerHand = m_dealer.GetHand();
-    std::cout<<"\nKrupier: ";
-    dealerHand.PrintHand();
+
+    std::cout<<"\nKrupier odkrywa kartę...\n";
+    DelayConsoleOutput(2000);
+    dealerHand.PrintHand();    
+    DelayConsoleOutput(2000);
     while(m_dealer.ShouldHit())
     {
         m_dealer.AddCard(m_deck.DrawCard());
+        std::cout<<"\n";
         dealerHand.PrintHand();    
+        DelayConsoleOutput(2000);
     }
 
     for(size_t i = 0; i < m_player.GetNumberOfHands(); ++i)
     {
         const Hand& playerHand = m_player.GetHand(i);
         OUTCOME outcome = DetermineOutcome(playerHand, dealerHand);
-        int reward = CalculateReward(outcome, playerHand.GetBet());
+        int reward = CalculateReward(outcome, playerHand.GetBet(), i+1);
         if(reward > 0) m_player.RecieveReward(reward);
+        DelayConsoleOutput();
     } 
-        
+
+    DelayConsoleOutput();
+    std::cout<<"\nTwoje saldo wynosi: "<<m_player.GetMoney()<<"\n";    
+}
+
+void Game::ContinuePlay()
+{
+    while (true)
+    {
+        int choice = 0;
+        std::cout << "Czy chcesz kontynuować?\n1 -> TAK! \n2 -> NIE :( \n";
+        choice = ReadInt();       
+
+        if(choice == 1 || choice == 2)
+        {
+            m_continuePlay =  choice == 1 ? true : false;
+            break;
+        }
+        else
+        {
+             std::cout<<"Wybrano niedozwoloną opcję. Sprobuj jeszcze raz.\n";
+        }
+    }
 }
 
 void Game::DelayConsoleOutput(int milliseconds) const
 {
+    std::cout << std::flush;
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
@@ -156,7 +212,7 @@ OUTCOME Game::DetermineOutcome(const Hand& playerHand, const Hand& dealerHand)
         else return LOSE;       
 }
 
-int Game::CalculateReward(OUTCOME outcome, int bet)
+int Game::CalculateReward(OUTCOME outcome, int bet, int handNumber)
 {
     int reward = 0;
     
@@ -164,27 +220,27 @@ int Game::CalculateReward(OUTCOME outcome, int bet)
     {
         case WIN:
             reward = bet*2;
-            std::cout<<"\nWYGRAŁEŚ!\n";
+            std::cout<<"\nRęka "<<handNumber<<" WYGRAŁEŚ!\n";
             break;
         
         case BLACKJACK:
             reward = bet + bet * 3 / 2;
-            std::cout<<"\nBLACKJACK\n";
+            std::cout<<"\nRęka "<<handNumber<<" BLACKJACK\n";
             break;
 
         case PUSH:
             reward = bet;
-            std::cout<<"PUSH\n ";
+            std::cout<<"\nRęka "<<handNumber<<" PUSH\n";
             break;
 
         case BUST:
             reward = 0;
-            std::cout<<"BUST\nPrzegrałeś\n";
+            std::cout<<"\nRęka "<<handNumber<<" Przegrałeś\n";
             break;
 
         case LOSE:
             reward = 0;
-            std::cout<<"\nPrzegrałeś\n";
+            std::cout<<"\nRęka "<<handNumber<<" Przegrałeś\n";
             break;
 
         case NONE:

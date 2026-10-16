@@ -5,7 +5,7 @@
 class Player
 {
     public:
-        Player(int money);
+        Player(int money = 0);
         int GetMoney() const;
         void RecieveReward(int reward);
         const Hand& GetHand(size_t index) const;
@@ -14,6 +14,7 @@ class Player
         bool PlaceBet(int bet);
         void AddHand(int bet);
         void AddCard(const Card& card, size_t index);
+        void Double(size_t index);
         void ResetHands();
 
     private:

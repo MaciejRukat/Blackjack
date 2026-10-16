@@ -3,7 +3,7 @@ all: blackjack
 blackjack: main.o card.o deck.o hand.o player.o dealer.o game.o input.o
 	g++ main.o card.o deck.o hand.o player.o dealer.o game.o input.o -o blackjack
 
-main.o: src/main.cpp include/game.h include/player.h include/dealer.h include/deck.h include/hand.h include/card.h
+main.o: src/main.cpp
 	g++ -std=c++17 -Iinclude -Wall -Wextra -g -c src/main.cpp -o main.o
 
 card.o: src/card.cpp include/card.h

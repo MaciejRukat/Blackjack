@@ -28,7 +28,7 @@ void Player::InputMoney()
 {
     while (true)
     {
-        std::cout << "Podaj ilość pieniędzy do wpłaty:\n";
+        std::cout << "\nPodaj ilość pieniędzy do wpłaty:\n";
         int deposit = ReadInt();
 
         if (deposit > 0)
@@ -55,6 +55,11 @@ void Player::AddHand(int bet)
 void Player::AddCard(const Card &card, size_t index)
 {
     m_hands.at(index).AddCard(card);
+}
+
+void Player::Double(size_t index)
+{
+    m_hands.at(index).Double();
 }
 
 void Player::ResetHands()
