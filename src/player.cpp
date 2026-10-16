@@ -1,5 +1,6 @@
 #include <iostream>
 #include "player.h"
+#include "input.h"
 
 Player::Player(int money):m_money(money){}
 
@@ -23,9 +24,27 @@ size_t Player::GetNumberOfHands() const
     return m_hands.size();
 }
 
-void Player::DepositMoney(int money)
+void Player::InputMoney()
 {
-    m_money += money;
+    while (true)
+    {
+        std::cout << "Podaj ilość pieniędzy do wpłaty:\n";
+        int deposit = ReadInt();
+
+        if (deposit > 0)
+        {
+            m_money += deposit;
+            return;                      
+        }
+        std::cout << "Kwota musi być większa od 0.\n";
+    }
+}
+
+bool Player::PlaceBet(int bet)
+{
+    if (bet <= 0 || bet > m_money) return false;  
+    m_money -= bet;
+    return true;
 }
 
 void Player::AddHand(int bet)
