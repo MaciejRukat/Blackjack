@@ -156,14 +156,15 @@ void Game::PlayRound()
         DelayConsoleOutput();
     }
     
-    if(m_player.GetNumberOfHands() != 1 &&  !m_player.GetHand(0).IsBust())
+    
+    const Hand& dealerHand = m_dealer.GetHand();
+    std::cout<<"\nKrupier odkrywa kartę...\n";
+    DelayConsoleOutput(2000);
+    dealerHand.PrintHand();    
+    DelayConsoleOutput(2000);
+    
+    if(ShouldDealerPlay())
     {
-        const Hand& dealerHand = m_dealer.GetHand();
-
-        std::cout<<"\nKrupier odkrywa kartę...\n";
-        DelayConsoleOutput(2000);
-        dealerHand.PrintHand();    
-        DelayConsoleOutput(2000);
         while(m_dealer.ShouldHit())
         {
         m_dealer.AddCard(m_deck.DrawCard());
@@ -210,6 +211,16 @@ void Game::ContinuePlay()
              std::cout<<"Wybrano niedozwoloną opcję. Sprobuj jeszcze raz.\n";
         }
     }
+}
+
+bool Game::ShouldDealerPlay()
+{
+    for (size_t i = 0; i < m_player.GetNumberOfHands(); ++i)
+    {
+        const Hand& h = m_player.GetHand(i);
+        if (!h.IsBust() && !h.IsBlackjack()) return true;
+    }
+    return false;
 }
 
 void Game::DelayConsoleOutput(int milliseconds) const
