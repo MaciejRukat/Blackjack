@@ -20,12 +20,17 @@ void Hand::ClearHand()
     m_score = 0;
 }
 
-void Hand::PrintHand(bool onlyFirst) const
+void Hand::Double()
 {
-    if(onlyFirst == true) 
+    m_bet *= 2;
+}
+
+void Hand::PrintHand(bool secondHiddenCard) const
+{
+    if(secondHiddenCard == true) 
     {
-        m_hand[0].PrintValue();
-        std::cout<<" ";
+        m_hand.at(0).PrintValue();
+        std::cout<<" Karta Zakryta \n";
         return;
     }
 
@@ -34,6 +39,7 @@ void Hand::PrintHand(bool onlyFirst) const
         m_hand[i].PrintValue();
         std::cout<<" ";
     }
+    std::cout<<"("<<GetScore()<<")\n";
 }
 
 const std::vector<Card>& Hand::GetCards() const

@@ -4,8 +4,8 @@
 
 Deck::Deck()
 {
-    InitializeDeck();
     m_rng.seed(std::random_device{}());
+    InitializeDeck();
 }
 
 void Deck::InitializeDeck()
@@ -22,6 +22,7 @@ void Deck::InitializeDeck()
             m_cards.push_back(Card(suit,value));
         }
     }
+    ShuffleDeck();
 }
 
 void Deck::ShuffleDeck()

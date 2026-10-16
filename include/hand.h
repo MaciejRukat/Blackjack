@@ -13,6 +13,7 @@ class Hand {
         int GetBet() const;
         size_t GetNumberofCards() const;
         void ClearHand();
+        void Double();
         bool IsBlackjack() const;
         bool IsBust() const;
 

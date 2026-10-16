@@ -429,3 +429,4 @@ FodyWeavers.xsd
 a.out
 *.o
 blackjack
+.DS_Store
